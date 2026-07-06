@@ -1,0 +1,160 @@
+Variant II
+/*1.Həm departament meneceri olub  həmçinin işçi meneceri olan şəxsləri tapdıqdan sonra
+onların departamentinin hansi street_Adresdə yerləşdiyini  göstərən sorğu yazın.
+Sütunlar:  Employee_id,Street_Address*/
+Sətir sayı:8
+SELECT DISTINCT
+       e.employee_id,
+       l.street_address
+FROM hr.employees e
+JOIN hr.departments d
+     ON e.employee_id = d.manager_id      
+JOIN hr.employees sub
+     ON e.employee_id = sub.manager_id   
+JOIN hr.locations l
+     ON d.location_id = l.location_id;
+
+
+
+
+/*2.İlk hissəsi ancaq rəqəmlərdən ibarət olan  street_Address-lərə görə qruplaşdırma aparın.
+Hər uzunluqdan neçə ədəd oldugunu qeyd edin.
+Sətir sayı: 4*/
+
+select 
+ length(substr(street_address,1,instr(street_address,' ')-1)) as uzunluq,
+ count(*) as say
+from hr.locations
+where length(translate(substr(street_address,1,instr(street_address,' ')-1),'*0123456789','*')) = length(substr(street_address,1,instr(street_address,' ')-1))
+group by length(substr(street_address,1,instr(street_address,' ')-1));
+
+3./*Departments cədvəlindəki sətirləri aşağıdakı məntiq ilə sıralayın.
+Manager_id sütununa görə azdan çoxa sıralama edin
+Alınan nəticədə departmentin adı, manager_id-si göstərilsin.
+Əgər manager_id yoxdursa o zaman manager təyin edilməyib yazılsın.
+Sətir sayı: 27*/
+select 
+DEPARTMENT_NAME,
+case when MANAGER_ID is null  then 'manager teyin edilmeyib'
+else to_char(MANAGER_ID) end  as manager
+ from hr.DEPARTMENTS
+ order by manager_id asc ;
+
+/*4.Commission_pct-si boşolmayan və maaşı 5000-dən çox olan işçilərin adını, soyadını 
+və öz departamenti
+üzrə maaş reytinqini tapın (eyni maaşlar eyni nömrə olsun və boş nömrələr olmasın) 
+Sətir sayı: 35 */
+select 
+FIRST_NAME,
+LAST_NAME,
+DENSE_RANK() over (partition by department_id order by salary desc)
+from hr.EMPLOYEES
+where commission_pct is not null and salary>5000;
+/*5.Həftənin 1-ci yarısı (4-cü günə kimi) işə girib 7000-dən çox maaş alan 
+işşilərin adını, soyadını, işə girmə tarixini tapın.Həftə MONDAY ilə başlayır
+Sətir sayı: 12 */
+SELECT first_name,
+       last_name,
+       hire_date,
+       TO_CHAR(hire_date, 'DY')
+FROM hr.employees
+WHERE salary > 7000
+  AND TO_CHAR(hire_date, 'DY')
+      IN ('MON','TUE','WED','THU');
+      
+      
+
+
+/*6.Employees cədvəlindəki Hire_date ləri  bölgüyə əsasən ayırın.
+İlin birinci yarısı işə girənlər və ilin ikinci  yarısı işə girənlər.
+Hər yarıdakı işə girən işçilərin qarşısına həmin yarıdakı ən çox maaşı göstərən sütunu gətirin.
+Sətir sayı:107*/
+SELECT first_name,
+       last_name,
+       hire_date,
+       CASE
+         WHEN extract (MONTH FROM hire_date) between  1 and  6
+          then  'FIRST_HALF'
+          else  'SECOND_HALF'
+           END AS il_yarisi,
+       MAX(salary) OVER (
+         PARTITION BY
+           CASE
+             WHEN EXTRACT(MONTH FROM hire_date) between  1 and  6
+                  THEN 'FIRST_HALF'
+             ELSE 'SECOND_HALF'
+           END
+       ) as max_salary
+FROM hr.employees ;
+
+      
+      
+
+
+/*7.Hər bir işçinin ilk maaş artımı tarixinin işə girdiyi gündən 
+  6 ay sonra olduğunu nəzərə alaraq 110-cu department-də ilk maaş artımı olacaq işçini  
+və maaş artımı tarixini tapın.
+Sətir sayi:1 */
+
+select first_name,
+       last_name,
+       add_months(hire_date, 6) 
+from  hr.employees
+where  department_id = 110
+order by  add_months(hire_date, 6)
+FETCH FIRST 1 ROW ONLY;
+
+
+      
+      
+
+
+/*8.Hər bir işçinin adını,soyadını, vəzifəsinin id-sini və vəzifəsi 
+üzrə maaş reytiniqini  bildirən aşağıdakı top_ranking sütunu çıxarın
+Əgər işçinin maaşı ilk 3-lükdədirsə sütun top_3_by_job qiymətini alır
+əks halda isə  not_in_top_3 qiymətini alır. (reytinq dedikdə ən çox maaş alan işçinin reytinq nömrəsinin 1  olmasi nəzərdə tutulur.)
+Sətir sayı: 107 */
+SELECT first_name,
+       last_name,
+       job_id,
+       CASE
+         when  DENSE_RANK() OVER (partition by  job_id order by  salary desc) <= 3
+              THEN 'top_3_by_job'
+         ELSE 'not_in_top_3'
+       end as  top
+from  hr.employees;
+
+
+      
+      
+
+
+/*9.Ümumi işçilərin orta maaşının yarısındn az maaş alan işçilərin maaş 
+cəmini tapın. 
+Sətir sayı:1*/
+select 
+ sum(salary) AS cem
+from hr.employees
+where  salary < (select  avg(salary) / 2 from hr.employees);
+
+
+      
+    
+/*10.Ad və soyadının birlikdə uzunluğu 12-dən çox olan işçilərin ad və soyadını birlikdə full_name başlığı ilə, departamentinin adını, menecerinin adını və vəzifəsinin adını tapın.
+Sətir sayı:41*/
+SELECT
+    e.first_name || ' ' || e.last_name AS full_name,
+    d.department_name,
+    m.first_name || ' ' || m.last_name AS manager_name,
+    j.job_title
+FROM hr.employees e
+JOIN hr.departments d
+    ON e.department_id = d.department_id
+LEFT JOIN hr.employees m
+    ON e.manager_id = m.employee_id
+JOIN hr.jobs j
+    ON e.job_id = j.job_id
+WHERE LENGTH(e.first_name || e.last_name) > 12;
+
+
+

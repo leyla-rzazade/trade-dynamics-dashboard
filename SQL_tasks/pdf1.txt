@@ -1,0 +1,93 @@
+Task 01 
+Selectiona nümunə olan select komandası yazın. 
+
+SELECT * FROM HR.EMPLOYEES
+
+Task 02 
+Employees cədvəlində job_id-si SA_REP və ya MK_MAN qiymətlərindən biri olan, əmək 
+haqqısı 4000 və 10000 arasında olan işçilərin siyahısını çıxarın. 
+
+SELECT 
+FIRST_NAME,
+LAST_NAME
+ FROM HR.EMPLOYEES
+ where (JOB_ID='SA_REP' OR JOB_ID='MK_MAN') AND (SALARY BETWEEN 4000 AND 10000)
+ 
+Task 03 
+DEPARTMENTS cədvəlində adında (department_name) ‘er’ hissəciyi olan departamentlərin 
+siyahını çıxaran sql yazın. 
+SELECT 
+DEPARTMENT_NAME
+ FROM HR.DEPARTMENTS
+ WHERE DEPARTMENT_NAME LIKE '%er%'
+
+Task 04 
+Locations cədvəlində street_address sütununda ‘-’ simvolu olan sətrləri çıxaran sql yazın. 
+SELECT 
+STREET_ADDRESS
+FROM HR.LOCATIONS
+where STREET_ADDRESS  like '%-%'
+
+Task 05 
+Employees cədvəlində manager_id sütunu boş olan sətirlərin employee_id ,first_name, 
+last_name sütunlarını çıxaran sql yazın. 
+
+SELECT 
+EMPLOYEE_ID,
+FIRST_NAME,
+LAST_NAME
+ FROM HR.EMPLOYEES
+ where MANAGER_ID is null
+
+Task 06 
+Employees cədvəlində əmək haqqısı 5000 və 10000 arasında olan işçilərin siyahını çıxaran 2 
+ədəd sql yazın (between operatorundan istifadə etməklə və etməməklə). 
+1)SELECT 
+FIRST_NAME,
+LAST_NAME,
+SALARY
+ FROM HR.EMPLOYEES
+ where SALARY BETWEEN 5000 and 10000
+2)SELECT 
+FIRST_NAME,
+LAST_NAME,
+SALARY
+ FROM HR.EMPLOYEES
+ where SALARY>=5000 and SALARY<=10000
+
+Task 07 
+Employees cədvəlindən sətirləri çıxar, department_id-lərə görə sıralanmış(böyük id yuxarıda), 
+eyni department_id-yə malik sətirlər bir daha employee_id sütununa görə də 
+sıralansınlar(kiçik id yuxarıda). 
+
+SELECT * FROM HR.EMPLOYEES
+order by DEPARTMENT_ID desc,EMPLOYEE_ID asc
+
+Task 08 
+Employees cədvəlində commission_pct sütununa görə sıralama edin, null qiymətlər əvvəl 
+gəlsin.
+ 
+SELECT * FROM HR.EMPLOYEES
+order by COMMISSION_PCT ASC NULLS first
+
+Task 09 
+Employees cədvəlində first_name, last_name və 12*salary məlumatlar çıxsın, 3-cü sütuna 
+görə sıralanma olsun (kiçik qiymət sonda) 
+
+SELECT 
+FIRST_NAME,
+LAST_NAME,
+salary*12 as "full salary"
+ from HR.EMPLOYEES
+ order by  "full salary" desc
+
+Task 10 
+Employees cədvəlindən 2004-cü ildən sonra işə qəbul olunmuş və maaşı 5000 –dən böyük 
+olan yaxud da işə qəbul tarixindən asılı olmayaraq maaşı 10000-dən böyük olan bütün 
+işçilərin siyahısını çıxaran sql yazın.
+
+SELECT *
+FROM HR.EMPLOYEES
+WHERE (EXTRACT(YEAR FROM HIRE_DATE) > 2004
+       AND SALARY > 5000)
+   OR SALARY > 10000;

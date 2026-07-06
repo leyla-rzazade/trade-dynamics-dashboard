@@ -1,0 +1,140 @@
+--Variant 1
+Task1 
+Employees cədvəlindəki işçilərin ad və soyadlarının ilk hərflərinin yerini 
+dəyişən sorğu yazın
+Nümunə :Ellen Abel-----Allen Ebel
+Sətir sayı:107
+select 
+first_name,
+last_name,
+substr(first_name,1,1),
+substr(LAST_NAME,1,1),
+substr(first_name,1,1)||substr(LAST_NAME,2),
+substr(LAST_NAME,1,1)||substr(FIRST_NAME,2)
+from hr.EMPLOYEES
+
+Task2
+Şirkətdə maaş artım edilməsi ilə bağlı qərar imzalanıb.Belə ki, maaşı 6000-dən
+kiçik bərabər 
+və ya  IT_PROG vəzifələrində işləyən əməkdaşlara 13 faiz artım, 
+maaşı 6000 dən böyük əməkdaşlara isə
+10 faiz artım olunmalıdır. Buna uyğun select yazın.
+Nəticə yekun artim məbləği əsasında çoxdan aza düzülsün.
+Sətir sayı:107
+
+select 
+LAST_NAME,
+FIRST_NAME,
+salary,
+JOB_ID,
+case 
+    when salary<=6000 or JOB_ID='IT_PROG' then (salary*1.13)
+    when salary>6000 then (salary*1.1)
+    end as artim
+ from hr.EMPLOYEES;
+
+Task 3
+Locations cədvəlində ya postal_code,ya city, ya da state_province sutunlarindan 
+biri boş olan sətirləri gətirin.
+Ekrana location_id,street_address ve nn_address sutunlarını çıxarın
+nn_address sütunu belə formalaşır: postal_code,state_province,city sütunlarından qeyd olunan ardıcıllıqda 
+ilk hansında məlumat varsa o gəlsin ,əgər hər 3 - ü də boşdursa 'məlumat tapılmadı' 
+qeyd olunsun.
+Sətir sayı:6
+select 
+LOCATION_ID,
+STREET_ADDRESS,
+case 
+    when POSTAL_CODE is not null then POSTAL_CODE
+    when STATE_PROVINCE is not null then STATE_PROVINCE
+    when CITY is not null then CITY
+    else 'melumat tapilmadi'
+    end  as nn_address
+ from hr.LOCATIONS
+where POSTAL_CODE is null or STATE_PROVINCE is null or CITY is null
+
+Task 4
+Soyadında rast gəlinən ilk b hərfi 3-cü hərfdən sonra  olan sətirlər üçün adın 
+uzunlugu,ad və soyad məlumatlarını çıxaran SQL yazın
+Sətir sayı:4
+select 
+FIRST_NAME,
+LAST_NAME,
+length(FIRST_NAME) as uzunluq,
+instr(lower(LAST_NAME),'b') as find
+ from hr.EMPLOYEES
+ where instr(lower(LAST_NAME),'b')>3
+
+Task 5 
+EMployees cədvəlində hər kvartalın ilk ayında işə girən işçiləri çıxaran SQL yazın
+setir sayi:34
+select 
+FIRST_NAME,
+LAST_NAME,
+HIRE_DATE,
+to_char(HIRE_DATE,'mm') as ay
+ from hr.EMPLOYEES
+ where to_char(HIRE_DATE,'mm') in (01,04,07,10)
+
+Task 6
+50-ci department-də işləyən hər bir işçinin 
+adını, soyadını, maaşını,ilk maaş artımı olacağı tarixi tapın.
+Maaş artımı tarixi belə hesablanır:
+İşçinin işə girdiyi tarixdən 6 ay sonrakı tarixin düşdüyü ayın son günü.
+Sətir sayı:45
+select 
+first_name,
+last_name,
+salary,
+HIRE_DATE,
+DEPARTMENT_ID,
+last_day(add_months(HIRE_DATE,6)) as "maas artim tarixi"
+from hr.EMPLOYEES
+where DEPARTMENT_ID=50
+
+Task 7
+Hər bir işçinin email addressini aşağıdakı şablona uyğun çıxarın.
+Steven's email address is SKING@gmail.com 
+Sətir sayı:107
+select 
+FIRST_NAME,
+LAST_NAME,
+substr(FIRST_NAME,1,1),
+FIRST_NAME|| '''s email address is '||substr(FIRST_NAME,1,1)||LAST_NAME||'@gmail.com'
+from hr.EMPLOYEES
+
+
+Task 8
+Job_history cədvəlindən start_date ve end_date tarixlərinin ili 
+eyni olan sətirlər tapan
+sorğu yazın 
+Sətir sayı:3
+select 
+END_DATE,
+start_date
+from hr.job_history
+where TO_char(start_date,'yyyy')=TO_char(END_DATE,'yyyy')
+
+
+Task 9
+Locations cədvəlindən postal_code sütunundan 1 hissəli olmayan
+postal_code-ları
+tapan sorğu yazın. 
+Nümunə M5V 2LT 
+Sətir sayı:3
+select 
+POSTAL_CODE
+from hr.locations
+where POSTAL_CODE like '% %'
+
+
+Task 10
+Departments cədvəlində manager_id-si olmayan və department_id-si 3-ə bölünən 
+departmentlerin  department_id və department name-lərini hamısını kiçik şəkildə 
+gətirən sorğu yazın.
+Sətir sayı:6
+select 
+lower(DEPARTMENT_NAME),
+department_id
+from hr.departments
+where MANAGER_ID is null and mod(DEPARTMENT_ID,3)=0

@@ -1,0 +1,155 @@
+Task 01
+/*Employees və Departments cədvəllərindən istifadə edərək eyni departamentdə və eyni phone_number
+ başlığına (phone_number sütununda ilk noqtəyə qədər olan hissə nəzərdə tutulur, 515.123.4567--->>'515' ) malik işçilərin sayını ve işlədiyi departamentlərin adını çıxaran sql yazin.
+Nətice department_name sütununa görə artan sırada düzülsün.
+*/
+SELECT
+    dep.department_name,
+    SUBSTR(emp.phone_number,1,INSTR(emp.phone_number,'.')-1) AS phone_prefix,
+    COUNT(emp.employee_id) AS employee_count
+FROM hr.employees emp
+JOIN hr.departments dep
+    ON emp.department_id = dep.department_id
+GROUP BY
+    dep.department_name,
+    SUBSTR(emp.phone_number,1,INSTR(emp.phone_number,'.')-1)
+ORDER BY dep.department_name;
+
+Task 02
+/*Employees və job_history cədvəlindən istifadə edərək,  hər  işçi üçün aşağıdakı 
+məlumatları çıxarın(SUBQUERY vasitəsilə):
+1-ci sütun: employee_id
+2-ci sütun: işcinin həmin job_id-li işə başlama tarixi, sütun adı: ishe bashlama tarixi
+3-cü sütun: işcinin həmin job_id-li işdən çıxma tarixi, sütun adı: ishden chixma tarixi.
+Əgər işçinin job_id-yə görə işə başlama tarixi və işdən çıxma tarixi yoxdursa 'melumat tapilmadi' qeyd olunsun.
+*/
+SELECT
+    e.employee_id,
+
+    NVL(
+        (SELECT TO_CHAR(j.start_date,'DD.MM.YYYY')
+         FROM hr.job_history j
+         WHERE j.employee_id=e.employee_id
+         AND j.job_id=e.job_id),
+        'melumat tapilmadi'
+    ) AS "ishe baslama tarixi",
+
+    NVL(
+        (SELECT TO_CHAR(j.end_date,'DD.MM.YYYY')
+         FROM hr.job_history j
+         WHERE j.employee_id=e.employee_id
+         AND j.job_id=e.job_id),
+        'melumat tapilmadi'
+    ) AS "ishden cixma tarixi"
+
+FROM hr.employees e;
+
+Task 03
+/*Hansı ölkələrdə departament sayı 1-dən çoxdursa o ölkələrin 
+adını və ölkədə yerləşən departament sayını çıxaran sql yazın.
+*/
+select
+cn.country_name,
+count(dep.department_id)
+from hr.COUNTRIES cn left join hr.LOCATIONS lc
+on cn.COUNTRY_ID=lc.COUNTRY_ID 
+left join hr.DEPARTMENTS dep 
+on lc.LOCATION_ID=dep.LOCATION_ID
+group by cn.COUNTRY_NAME
+having count(dep.department_id)>1;
+
+Task 04
+/*Locations cədvəlində street_addrees sütununda ilk simvolun rəqəm olub olmamasına görə qruplaşma edin
+Nəticədə ilk simvolu rəqəm olan sətirlərin sayı və ilk simvolu rəqəm olmayan sətirlərin sayı gəlsin.
+*/
+select
+ count(*),
+case 
+    when substr(street_address,1,1) BETWEEN '0' and '9'
+    then 'reqemle baslayan'
+    else 'reqemle baslamayan'
+    end as tip
+from hr.LOCATIONS
+    group by tip;
+
+Task 05
+/*Employees  cədvəlində job_id sütununda 'T_C' birləşməsi olan sətirlər üzrə 
+yoxlama getsin---> ya maaşı 3000-4000 aralığında olan  ya da employee_id si 140-dan böyük olan 
+işçilərin məlumatı gəlsin.
+*/
+select 
+*
+from hr.EMPLOYEES
+where UPPER(JOB_ID) like '%T_C%' and ((salary between 3000 and 4000) or EMPLOYEE_ID>140);
+
+Task 06
+/*Locations cədvəlində 'S' hərfi ilə başlayan şəhərlərdən region_id-si 1,2  olan sətirləri çıxaran sql yazın (Exists ilə)*/
+
+SELECT *
+FROM hr.locations lc left join hr.countries cn
+on lc.COUNTRY_ID=cn.COUNTRY_ID
+WHERE lc.city LIKE 'S%'
+  AND EXISTS (
+    SELECT 1
+    FROM hr.regions rg
+    WHERE rg.region_id = cn.region_id
+      AND rg.region_id IN (1, 2)
+  );
+
+/*Task 07
+Employees cədvəlində soyad və email uzunluqları eyni olan sətirlər üçün 2 sütun nəticədə çıxarın. Nəticə işə girmə tarixinə görə böyük tarixdən kiçik tarixə sıralansın.
+1-ci sütun: first_name və last_name  - 'ad ve soyad' aliası ilə
+2-ci sütun: hire_date */
+
+select 
+FIRST_NAME||' '||LAST_NAME as "ad ve soyad",
+HIRE_DATE
+from hr.EMPLOYEES
+where length(last_NAME)=length(email)
+order by hire_date desc;
+
+
+Task 08 
+/*Region_name və qarşısında hər region üzrə yerləşən 
+şəhərləri əlifba sırasi ile ','  ayırmaqla çıxarın.
+*/
+select 
+ rg.REGION_NAME,
+ listagg(lc.city,',')
+  within group ( order by lc.city asc) as "siyahi"
+from hr.locations lc left join hr.countries cn 
+on cn.COUNTRY_ID=lc.COUNTRY_ID
+left join hr.REGIONS rg
+on rg.REGION_ID=cn.REGION_ID
+group by rg.region_name
+
+Task 09
+
+/*
+30-cu department-dəki hamıdan yüksək maaş alan işşiləri
+ gətirən sorğu yazın.  
+ */
+SELECT
+    first_name || ' ' || last_name AS "işçi",
+    salary
+FROM hr.employees
+WHERE department_id = 30
+  AND salary = (
+      SELECT MAX(salary)
+      FROM hr.employees
+      WHERE department_id = 30
+  );
+
+Task 10
+/*
+Employees cədvəlindən 2-ci ən yüksək maaşı  tapın. 
+ */
+SELECT salary
+FROM (
+    SELECT salary,
+           DENSE_RANK() OVER (ORDER BY salary DESC) AS rnk
+    FROM hr.employees
+)
+WHERE rnk = 2;
+
+

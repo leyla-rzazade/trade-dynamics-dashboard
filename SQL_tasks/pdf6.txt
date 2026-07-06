@@ -1,0 +1,75 @@
+Task 51 
+Employees cədvəlindən employee_id-si 200 olan işçinin employee_id, first_name, last_name 
+sütunlarını çıxaran SQl yazın. 
+SELECT 
+employee_id,
+first_name,
+LAST_NAME
+FROM HR.EMPLOYEES 
+WHERE EMPLOYEE_ID=200
+
+Task 52 
+Employees cədvəlindən salary-si 10000-dən böyük olan işçilərin məlumatlarını çıxaran SSQl 
+yazın.
+SELECT * FROM HR.EMPLOYEES
+WHERE SALARY>10000 
+
+Task53 
+Departments cədvəlindən department_name sütunu A hərfi ilə bitən sətirləri çıxaran SQL 
+yazın. 
+SELECT * FROM HR.DEPARTMENTS
+WHERE UPPER(DEPARTMENT_NAME) LIKE '%A'
+
+Task 54 
+Locations cədvəlindən street_address sütunda Via sözü olan sətirləri çıxaran SQL yazın. 
+SELECT * FROM HR.LOCATIONS 
+WHERE STREET_ADDRESS LIKE '%Via%'
+
+Task 55 
+Locations cədvəlindən location_id-si 1400-dən 1700-ə qədər olan sətirləri çıxaran SQL yazın 
+SELECT * from hr.LOCATIONS 
+where LOCATION_ID BETWEEN 1400 and 1700
+
+Task 56  
+Countries cədvəlindən country_name sütununda a və ardınca  dərhal d hərfi gələn sətirləri 
+çıxaran SQL yazın. 
+SELECT * from hr.COUNTRIES
+where COUNTRY_NAME like '%ad%'
+
+Task 57 
+Countries cədvəlindən country_name sütunu A başlayan və kiçik a hərfi ilə bitən sətirləri 
+çıxaran SQL yazın. 
+SELECT * FROM HR.COUNTRIES
+where COUNTRY_NAME like 'A%a'
+
+Task 58 
+Employees cədvəlindən manager_id-si boş olan sətri çıxaran SQL yazın. 
+SELECT * FROM hr.EMPLOYEES
+where MANAGER_ID is null
+
+Task 59 
+Jobs cədvəlindən job_id sütununda sondan 4-cü simvolu _ olan sətirləri çıxaran SQL yazın 
+SELECT * 
+FROM hr.jobs
+WHERE job_id LIKE '%\_%___' ESCAPE '\'
+
+Task 60 
+
+Employees cədvəlindən employee_id-si department_id-nin 2 qatından 4 vahid çox olan   olan 
+sətirləri aşağıdakı formada    çıxaran SQL yazın 
+<employee_id> ededi <department_id> ədədinin 2 mislindən 4 vahid çoxdur. 
+Alias:Employee_id və department_id fərqi 
+SELECT
+    employee_id || ' ededi ' ||
+    department_id ||
+    ' ededinin 2 mislinden 4 vahid coxdur' AS "Employee_id və department_id fərqi"
+FROM HR.EMPLOYEES
+WHERE employee_id = department_id * 2 + 4;
+
+Task 61 
+Employees cədvəlindən manager_id –si 120-dən kiçik və ya department_id-si 100-dən böyük 
+olan təkrarlanmayan manager_id siyahısını çıxar
+SELECT 
+distinct manager_id
+from hr.EMPLOYEES
+where MANAGER_ID<120 or DEPARTMENT_ID>100

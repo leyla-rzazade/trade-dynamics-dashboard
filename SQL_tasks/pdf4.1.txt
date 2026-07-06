@@ -1,0 +1,90 @@
+Task 31 
+Employees cədvəlindən last_name sütunun sondan 3-cü hərfi ‘i’ hərfi olan və  
+commission_pct boş olmayan işçilərin employee_id, last_name, commission_pct və  
+job_id sütunlarını çıxaran SQL yazın. 
+SELECT 
+employee_id,
+last_name,
+commission_pct,
+job_id
+from hr.EMPLOYEES
+where last_name like '%i__' and COMMISSION_PCT is not NULL
+Task 32 
+Employees cədvəlindən telefon nömrəsinin 4-cü simvolu ‘.’ olan və ya commission_pct boş 
+olan işçilərin employee_id, last_name və phone_number sütunlarını çıxaran SQL yazın.
+SELECT 
+employee_id,
+last_name,
+phone_number
+from hr.EMPLOYEES
+where PHONE_NUMBER like '___.%' or COMMISSION_PCT is null 
+Task 33 
+Locations cədvəlinin country_id-si UK,US olan setrleri aşağıdakı şablona uyğun  
+çıxaran SQL yazın:  
+<street_address> is located in < country_id > 
+Alias: Address_info  
+SELECT
+street_address|| ' is located in ' || country_id as "Address_info"
+FROM HR.LOCATIONS
+where country_id in ('UK','US') 
+Task 34 
+Jobs cədvəlindən max_salary 30000-den boyuk ve ya min_salary 20000-den kiçik  
+olan job_title, max_salary, min_salary çıxaran SQL yazın 
+SELECT 
+job_title,
+max_salary,
+min_salary
+from hr.JOBS
+where max_salary>30000 or min_salary<20000
+Task 35 
+Employees cədvəlindən manager_id sütunu 100 və 110 arasında olan ve first_name 
+‘J’ ile baslamayan işçilərin employee_id,first_name, last_name və manager_id 
+sütunlarını çıxaran SQL yazın 
+SELECT 
+employee_id,
+first_name,
+last_name,
+manager_id
+from hr.EMPLOYEES
+where MANAGER_ID BETWEEN 100 and 110 and FIRST_NAME not LIKE 'J%'
+Task 36 
+Employees cədvəlindən department_id sütunu 10, 20 və 40 olan ve ya  
+commission_pct bos olan işçilərin employee_id, last_name və department_id sütunlarını  
+çıxaran SQL yazın 
+SELECT 
+employee_id,
+last_name,
+department_id
+from hr.EMPLOYEES
+where DEPARTMENT_ID in (10,20,40) or COMMISSION_PCT is null
+Task 37 
+Employees cədvəlindən salary sütunu 10000 və 15000 arasında olan ve salary  
+sutunu 14000 olmayan işçilərin employee_id, last_name və salary sütunlarını çıxaran SQL  
+yazın 
+SELECT 
+employee_id, 
+last_name,
+ salary 
+ from hr.EMPLOYEES
+ where salary BETWEEN 10000 and 15000 and salary<>14000
+Task 38 
+Locations cədvəlindən location_id sütunu 1500-den boyuk olan ve country_id-si US,  
+CA olan location_id,city ve country_id sütunlarını çıxaran SQL yazın. 
+SELECT 
+location_id,
+city,
+country_id
+from hr.LOCATIONS
+where LOCATION_ID>1500 and COUNTRY_ID in ('US','CA')
+Task 39 
+Employees cədvəlindən job_id sütunu ‘REP’ ilə bitən işçilərin bütün sütunlarını  
+çıxaran SQL yazın. 
+SELECT *
+FROM hr.EMPLOYEES
+where JOB_ID like ('%REP')
+Task 40 
+Employees cədvəlindən employee_id 105-den boyuk olan hemcinin first_name ‘A’ ile  
+baslayan işçilərin ve ya commission_pct sütunu NULL olan setirlerii cixart
+SELECT *
+FROM HR.EMPLOYEES
+WHERE EMPLOYEE_ID>105 AND FIRST_NAME LIKE 'A%' or COMMISSION_PCT is null

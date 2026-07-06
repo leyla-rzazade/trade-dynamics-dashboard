@@ -1,0 +1,42 @@
+1. Employees cedvelinden istifade etmekle 2 cur datani chixarmaq uchun muvafiq Select-leri yazin.
+I  - Her departamente gore salary cemi;
+II - Her job_id-ye gore mash cemi.
+select
+department_id,
+sum(salary)
+from hr.Employees
+group by department_id;
+
+select 
+job_id,
+sum(salary)
+from hr.EMPLOYEES
+group by job_id;
+
+2. Hemin datalari 1 cedvel kimi chixarmaq uchun uygun set operatorunu tetbiq edin.
+select
+to_char(department_id),
+to_char(sum(salary))
+from hr.Employees
+group by department_id
+union all
+select 
+job_id,
+to_char(sum(salary))
+from hr.EMPLOYEES
+group by job_id
+
+3. Employees cedvelinden istifade etmekle Last_name, First_name ve Phone_number melumatlarini bi sutunda alt-alta chixarmaq ucuhun muvafiq set operatorundan istifade edin.
+select last_name from hr.EMPLOYEES
+union all
+select first_name from hr.EMPLOYEES
+union all
+select phone_number from hr.EMPLOYEES
+4. Departments cedvelinde olan department_id-lerden hansilar Employees cedvelinin departmnt_id-sutununda yoxdursa, hemin department_id-leri gosteren sql yazin (set operatorunun tetbiqi ile).
+select 
+department_id
+from hr.DEPARTMENTS
+minus
+select
+department_id
+from hr.Employees
